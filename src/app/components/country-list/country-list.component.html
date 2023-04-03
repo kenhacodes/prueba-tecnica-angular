@@ -1,0 +1,37 @@
+<div class="container">
+  <form [formGroup]="countryForm">
+    <label for="country">Country Name: </label>
+    <input type="text" id="country" formControlName="country" (input)="updateCountries()">
+
+    <label for="continent">Continent:</label>
+    <select id="continent" multiple (change)="onContinentChange($event.target.selectedOptions)">
+      <option value="Africa">Africa</option>
+      <option value="Antarctica">Antarctica</option>
+      <option value="Asia">Asia</option>
+      <option value="Europe">Europe</option>
+      <option value="North America">North America</option>
+      <option value="South America">South America</option>
+      <option value="Oceania">Oceania</option>
+    </select>
+  </form>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Country</th>
+      <th>Continent</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let country of paginatedCountries">
+      <td>{{ country.country }}</td>
+      <td>{{ country.continent }}</td>
+    </tr>
+    </tbody>
+  </table>
+  <div class="pagination">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>
