@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ListOfCountriesService } from '../../services/list-of-countries.service';
 import { Country } from '../../models/listOfCountries.model';
 import { FormGroup, FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
+import {Subject} from "rxjs";
+
 
 @Component({
   selector: 'app-country-list',
@@ -18,24 +21,34 @@ export class CountryListComponent implements OnInit {
     country: new FormControl(''),
     continent: new FormControl('')
   });
+  private filterUpdate = new Subject<void>();
 
-  constructor(private listOfCountriesService: ListOfCountriesService) { }
+  constructor(private listOfCountriesService: ListOfCountriesService) {
+    this.filterUpdate.pipe(debounceTime(500)).subscribe(() => {
+      this.updateCountries();
+    });
+  }
+
+
 
   ngOnInit(): void {
     this.getListOfCountries();
+    this.countryForm.get('country').valueChanges.pipe(debounceTime(0)).subscribe(() => {
+      this.requestFilterUpdate();
+    });
   }
 
   getListOfCountries() {
     this.listOfCountriesService.getCListOfCountries().subscribe((countries) => {
       this.countries = countries;
-      this.updateCountries();
+      this.requestFilterUpdate();
     });
   }
 
   onContinentChange(selectedOptions: HTMLCollectionOf<HTMLOptionElement>) {
     const selectedContinents = Array.from(selectedOptions).map(option => option.value);
     this.countryForm.get('continent').setValue(selectedContinents);
-    this.updateCountries();
+    this.requestFilterUpdate();
   }
 
   updateCountries() {
@@ -68,6 +81,9 @@ export class CountryListComponent implements OnInit {
     const startIndex = (this.currentPage - 1) * this.countriesPerPage;
     const endIndex = startIndex + this.countriesPerPage;
     return this.filteredCountries.slice(startIndex, endIndex);
+  }
+  requestFilterUpdate(): void {
+    this.filterUpdate.next();
   }
 }
 

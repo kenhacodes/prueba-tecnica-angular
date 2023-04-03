@@ -1,7 +1,8 @@
 <div class="container">
   <form [formGroup]="countryForm">
     <label for="country">Country Name: </label>
-    <input type="text" id="country" formControlName="country" (input)="updateCountries()">
+    <input type="text" id="country" formControlName="country">
+
 
     <label for="continent">Continent:</label>
     <select id="continent" multiple (change)="onContinentChange($event.target.selectedOptions)">
@@ -23,8 +24,8 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let country of paginatedCountries">
-      <td>{{ country.country }}</td>
+    <tr *ngFor="let country of paginatedCountries" class="table-row">
+    <td>{{ country.country }}</td>
       <td>{{ country.continent }}</td>
     </tr>
     </tbody>
